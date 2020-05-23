@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import torch
 import scipy.io as sio
-from ista_net import ISTA_Net
+from net import ISTA_Net
 from toolbox import imread_CS_py, img2col_py, col2im_CS_py
 from argparse import ArgumentParser
 
@@ -22,10 +22,8 @@ Phi_data = sio.loadmat(Phi_data_Name)
 Phi_input = Phi_data['phi']
 Phi = torch.from_numpy(Phi_input).type(torch.FloatTensor)
 
-Img = cv2.imread('../../data/RCM/training_imgs/Fair1_1_RCM.tif', 1)
-print(Img.shape)
-cv2.imwrite("Fair1_1_RCM.png", Img)
-exit()
+Img = cv2.imread('../../data/Natural_Images/testing_imgs/barbara.tif', 1)
+
 Img_yuv = cv2.cvtColor(Img, cv2.COLOR_BGR2YCrCb)
 Img_rec_yuv = Img_yuv.copy()
 
