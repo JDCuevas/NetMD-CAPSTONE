@@ -12,7 +12,7 @@ parser = ArgumentParser(description='ISTA-Net Training Data Generator')
 
 parser.add_argument('--data_dir', type=str, default='data', help='training or test data directory')
 parser.add_argument('--dataset_name', type=str, default='RCM', help='name of dataset')
-parser.add_argument('--output_name', type=str, default='Training_Data', help='name of dataset')
+parser.add_argument('--output_name', type=str, default='Training_Data_ISTA', help='name of dataset')
 
 args = parser.parse_args()
 
@@ -57,9 +57,9 @@ def col2im_CS_py(X_col, row, col, row_new, col_new):
 
 # Load images
 #imgs_dir = os.path.join(args.data_dir, args.dataset_name)
-imgs_dir = '/' + args.dataset_name
+imgs_dir = './' + args.dataset_name + '/training_imgs'
 filepaths = glob.glob(imgs_dir + '/*.tif')
-
+print(imgs_dir)
 num_imgs = len(filepaths)
 
 dataset = np.zeros(shape=(874509, 1089))
@@ -89,8 +89,8 @@ print(dataset.shape)
 
 # Save dataset
 
-dataset_name = './%s/%s.hdf5' % (args.dataset_name, 'Training_Data')
+dataset_name = './%s/%s.hdf5' % (args.dataset_name, args.output_name)
 #sio.savemat(dataset_name, {'labels': dataset[:500000]}, do_compression=True)
 
 with h5py.File(dataset_name, 'w') as f:
-        dset = f.create_dataset('labels', data=dataset)
+        dset = f.create_dataset('labels', data=dataset[:500000])
