@@ -1,3 +1,4 @@
+import os
 import platform
 
 import glob
@@ -57,7 +58,12 @@ else:
     Qinit = np.dot(X_YT, np.linalg.inv(Y_YT))
     del X_data, Y_data, X_YT, Y_YT
 
-    qinit_path = './initialization_matrix/%s/Initialization_Matrix_%d.mat' % (dataset_name, cs_ratio)
+    qinit_dir = './initialization_matrix/%s' % (dataset_name)
+    qinit_path = '%s/Initialization_Matrix_%d.mat' % (qinit_dir, cs_ratio)
+
+    if not os.path.exists(qinit_dir):
+        os.makedirs(qinit_dir)
+
     sio.savemat(qinit_path, {'Qinit': Qinit})
 
 ista_net.load_qinit(qinit_path)
