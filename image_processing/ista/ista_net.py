@@ -140,23 +140,26 @@ class ISTA_Net():
         self.model.load_state_dict(torch.load(model_path, map_location=torch.device(self.device)))
 
     def _train(self, dataset, batch_size, start_epoch, end_epoch, cs_ratio, model_dir, log_dir):
-        trian_size = dataset.shape[0]
+        train_size = dataset.shape[0]
         optimizer = torch.optim.Adam(self.model.parameters(), lr=1e-4)
 
+ 
         model_dir = "./%s/CS_ISTA_Net_plus_layer_%d_ratio_%d_lr_%.4f" % (model_dir, self.layer_num, cs_ratio, 0.0001)
-        log_file_name = "./%s/Log_CS_ISTA_Net_plus_layer_%d_ratio_%d_lr_%.4f.txt" % (log_dir, self.layer_num, cs_ratio, 0.0001)
-
+        log_dir = "./%s/Log_CS_ISTA_Net_plus_layer_%d_ratio_%d_lr_%.4f" % (log_dir, self.layer_num, cs_ratio, 0.0001)
+        
 
         if (platform.system() =="Windows"):
-            rand_loader = DataLoader(dataset=RandomDataset(dataset, trian_size), batch_size=batch_size, num_workers=0,
+            rand_loader = DataLoader(dataset=RandomDataset(dataset, train_size), batch_size=batch_size, num_workers=0,
                                     shuffle=True)
         else:
-            rand_loader = DataLoader(dataset=RandomDataset(dataset, trian_size), batch_size=batch_size, num_workers=4,
+            rand_loader = DataLoader(dataset=RandomDataset(dataset, train_size), batch_size=batch_size, num_workers=4,
                                     shuffle=True)
 
 
         if not os.path.exists(model_dir):
             os.makedirs(model_dir)
+        if not os.path.exists(log_dir):
+            os.makedirs(log_dir)
 
 
         if start_epoch > 0:
@@ -191,11 +194,11 @@ class ISTA_Net():
 
                 output_data = "[%02d/%02d] Total Loss: %.4f, Discrepancy Loss: %.4f,  Constraint Loss: %.4f\n" % (epoch_i, end_epoch, loss_all.item(), loss_discrepancy.item(), loss_constraint)
                 print(output_data)
+            
+                output_file = open(log_dir + '/log.txt', 'a')
+                output_file.write(output_data)
+                output_file.close()
 
-            output_file = open(log_file_name, 'a')
-            output_file.write(output_data)
-            output_file.close()
-
-            if epoch_i % 5 == 0:
-                torch.save(self.model.state_dict(), "./%s/net_params_%d.pkl" % (model_dir, epoch_i))  # save only the parameters
+                if epoch_i % 5 == 0:
+                    torch.save(self.model.state_dict(), "./%s/net_params_%d.pkl" % (model_dir, epoch_i))  # save only the parameters
 

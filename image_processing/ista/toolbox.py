@@ -66,15 +66,18 @@ class RandomDataset(Dataset):
         return self.len
 
 def load_dataset(dataset_path):
+    
     if '.mat' in dataset_path:
         training_data = sio.loadmat(dataset_path)
         training_labels = training_data['labels']
+        training_labels = np.array(training_labels)
 
     elif '.hdf5' in dataset_path:
         with h5py.File(dataset_path, 'r') as training_data:
             training_labels = training_data['labels']
+            training_labels = np.array(training_labels)
 
     else:
         print('Dataset file must be in .mat or .hdf5 file format.')
 
-    return np.array(training_labels)
+    return training_labels
