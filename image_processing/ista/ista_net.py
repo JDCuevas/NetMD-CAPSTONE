@@ -103,6 +103,8 @@ class ISTA_Net():
 
     def reconstruct(self, cs_measurements, orig_width, orig_height):
         Phix = cs_measurements
+        Phix = torch.from_numpy(Phix).type(torch.FloatTensor)
+        Phix = Phix.to(self.device)
 
         [X_output, _] = self.model(Phix, self.Phi, self.Qinit)
 
@@ -116,22 +118,22 @@ class ISTA_Net():
         X_rec = np.clip(col2im_CS_py(Prediction_value.transpose(), orig_width, orig_height, pad_width, pad_height), 0, 1)
 
         img_rec = X_rec * 255
-        self.last_rec = img_rec
 
         del X_output
+
+        #img_rec_gray = np.zeros((orig_width, orig_height, 3))
+        #img_rec_gray[:,:,0] = img_rec
 
         return img_rec
 
     def load_phi(self, phi_path):
-        self.Phi_data_Name = phi_path
-        self.Phi_data = sio.loadmat(self.Phi_data_Name)
+        self.Phi_data = sio.loadmat(phi_path)
         self.Phi_input = self.Phi_data['phi']
         self.Phi = torch.from_numpy(self.Phi_input).type(torch.FloatTensor)
         self.Phi = self.Phi.to(self.device)
     
     def load_qinit(self, qinit_path):
-        self.Qinit_Name = qinit_path
-        self.Qinit_data = sio.loadmat(self.Qinit_Name)
+        self.Qinit_data = sio.loadmat(qinit_path)
         self.Qinit = self.Qinit_data['Qinit']
         self.Qinit = torch.from_numpy(self.Qinit).type(torch.FloatTensor)
         self.Qinit = self.Qinit.to(self.device)
@@ -144,8 +146,8 @@ class ISTA_Net():
         optimizer = torch.optim.Adam(self.model.parameters(), lr=1e-4)
 
  
-        model_dir = "./%s/CS_ISTA_Net_plus_layer_%d_ratio_%d_lr_%.4f" % (model_dir, self.layer_num, cs_ratio, 0.0001)
-        log_dir = "./%s/Log_CS_ISTA_Net_plus_layer_%d_ratio_%d_lr_%.4f" % (log_dir, self.layer_num, cs_ratio, 0.0001)
+        model_dir = "./%s/CS_ISTA_Net_plus_ratio_%d" % (model_dir, cs_ratio)
+        log_dir = "./%s/Log_CS_ISTA_Net_plus_ratio_%d" % (log_dir, cs_ratio)
         
 
         if (platform.system() =="Windows"):
@@ -199,6 +201,8 @@ class ISTA_Net():
                 output_file.write(output_data)
                 output_file.close()
 
-                if epoch_i % 5 == 0:
-                    torch.save(self.model.state_dict(), "./%s/net_params_%d.pkl" % (model_dir, epoch_i))  # save only the parameters
+            if epoch_i % 5 == 0 and epoch_i != end_epoch:
+                torch.save(self.model.state_dict(), "./%s/net_params_%d.pkl" % (model_dir, epoch_i))  # save only the parameters
+            elif epoch_i == end_epoch:
+                torch.save(self.model.state_dict(), "./%s/net_params.pkl" % (model_dir))
 

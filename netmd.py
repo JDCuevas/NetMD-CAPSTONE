@@ -1,5 +1,13 @@
-from PySide2 import QtWidgets, QtCore
+import os
+import cv2
+import ntpath
+import numpy as np
+import scipy.io as sio
+from PySide2 import QtWidgets, QtCore, QtGui
 from ui import instructions, home, settings
+from image_processing.ista.ista_net import ISTA_Net
+from image_processing.denoiser import RCMDD
+from image_processing.ista.toolbox import snr, extract_luminance
 
 
 
@@ -11,16 +19,17 @@ class NetMDInstructions(instructions.Ui_InstructionsWindow, QtWidgets.QMainWindo
         self.setMinimumHeight(750)
         self.setMinimumWidth(1250)
         self.startButton.clicked.connect(self.get_started)
+        
+        self.home = NetMDHome(self)
+        self.settings = NetMDSettings(self)
 
     def get_started(self):
         self.hide()
-        app = NetMDHome(self)
-        app.show()
+        self.home.show()
 
     def settings_back(self):
         self.hide()
-        settings = NetMDSettings(self)
-        settings.show()
+        self.settings.show()
 
 
 class NetMDHome(home.Ui_HomeWindow, QtWidgets.QMainWindow):
@@ -32,17 +41,37 @@ class NetMDHome(home.Ui_HomeWindow, QtWidgets.QMainWindow):
         self.actionSettings.triggered.connect(self.settings)
         self.actionIntructions.triggered.connect(self.instructions)
 
-        # Upload buttons
+        # Buttons
         self.csMeasurementsButton.clicked.connect(self.select_cs)
         self.samplingMatrixButton.clicked.connect(self.select_phi)
         self.initializationMatrixButton.clicked.connect(self.select_qinit)
+        self.origImageButton.clicked.connect(self.select_orig_image)
 
         self.reconstructButton.clicked.connect(self.reconstruct)
+        self.snrButton.clicked.connect(self.calculate_snr)
+        self.saveButton.clicked.connect(self.save)
+
+        # Defaults
+        #self.csMeasurementsPathLine.setText(os.path.join(os.getcwd(), 'cs_test_samples/Natural_Images/cs_25/barbara_cs.mat'))
+        #self.samplingMatrixPathLine.setText(os.path.join(os.getcwd(), 'image_processing/ista/sampling_matrix/phi_0_25_1089.mat'))
+        #self.initializationMatrixPathLine.setText(os.path.join(os.getcwd(), 'image_processing/ista/initialization_matrix/Natural_Images/Initialization_Matrix_25.mat'))
+        #self.origImagePathLine.setText(os.path.join(os.getcwd(), 'data/Natural_Images/testing_imgs/barbara.tif'))
+
+        self.csRatiosComboBox.setCurrentIndex(1)
 
         # ISTA-Net+RCMDD Variables
         self.cs_measurements_path = None
         self.phi_path = None
         self.qinit_path = None
+
+        self.ista_models_dir = os.path.join(os.getcwd(), 'image_processing/rcmdd/model/RCM/')
+        self.rcmdd_models_dir = os.path.join(os.getcwd(), 'image_processing/rcmdd/model/RCM/')
+    
+        self.img_recon = None
+        self.img_recon_flag = False
+        
+        self.ista_net = ISTA_Net()
+        self.rcmdd = RCMDD()
         
 
     def instructions(self):
@@ -69,17 +98,90 @@ class NetMDHome(home.Ui_HomeWindow, QtWidgets.QMainWindow):
             QtWidgets.QMessageBox.about(self, "Initialization Matrix required", "Please upload initialization matrix.")
             return
 
+        try: 
+            width = int(self.widthLineEdit.text())
+            height = int(self.heightLineEdit.text())
+
+        except ValueError:
+            QtWidgets.QMessageBox.about(self, "Width and Height type error", "Width and Height must be integers.")
+            return
+
+        _, cs_file_ext = os.path.splitext(cs_measurements_path)
+        _, phi_file_ext = os.path.splitext(phi_path)
+        _, qinit_file_ext = os.path.splitext(qinit_path)
+
+        if cs_file_ext != '.mat' or phi_file_ext != '.mat' or qinit_file_ext != '.mat':
+            QtWidgets.QMessageBox.about(self, "File Extension Error", "Files must be in .mat format.")
+
+        cs_measurements = np.array(sio.loadmat(cs_measurements_path)['cs_measurements'])
+        cs_ratio = int(self.csRatiosComboBox.currentText())
+
+        self.ista_net.load_phi(phi_path)
+        self.ista_net.load_qinit(qinit_path)
+        self.ista_net.load_model(os.path.join(self.ista_models_dir, 'CS_ISTA_Net_plus_ratio_%d/net_params.pkl' % (cs_ratio)))
+        #self.rcmdd.load_model(os.path.join(self.rcmdd_models_dir, 'RCMDD_ratio_%d/net_params.pkl' % (cs_ratio)))
+       
+        # Reconstruct and denoise CS image
+        self.img_recon = self.ista_net.reconstruct(cs_measurements, width, height)
+        self.img_recon_flag = True
+        #self.img_recon = self.rcmdd.denoise(self.img_recon)
+
+        # Preview reconstruction
+        cv2.imwrite('tmp.png', self.img_recon)
+        self.img_recon = cv2.imread('tmp.png')
+        self.recoveredImageLabel.setPixmap(QtGui.QPixmap('tmp.png'))
+        os.remove('tmp.png')
+
+    def calculate_snr(self):
+        orig_img_path = self.origImagePathLine.text()
+        
+        if not orig_img_path:
+            QtWidgets.QMessageBox.about(self, "Original Image Required", "Please upload original image.")
+            return
+
+        if not self.img_recon_flag:
+            QtWidgets.QMessageBox.about(self, "Reconstructed Image Required", "Please reconstruct cs image first.")
+            return
+
+        orig_img = cv2.imread(orig_img_path)
+        snr_val = snr(orig_img, self.img_recon)
+
+        self.snrLCDNumber.display(float(snr_val))
+
+    def save(self):
+        if not self.img_recon_flag:
+            QtWidgets.QMessageBox.about(self, "Reconstructed Image Required", "No reconstruction to save.")
+            return
+
+        default = os.path.join(os.getcwd(), 'reconstructed_samples/')
+        save_dir = str(QtWidgets.QFileDialog.getExistingDirectory(self, "Select Directory", default))
+        cs_measurements_path = self.csMeasurementsPathLine.text()
+        cs_ratio = int(self.csRatiosComboBox.currentText())
+        orig_name, _ = os.path.splitext(ntpath.basename(cs_measurements_path))
+
+        filepath = '%s/%s_recon_%s.png' % (save_dir, orig_name, cs_ratio)
+        
+        cv2.imwrite(filepath, self.img_recon)
+
     def select_cs(self):
-        self.cs_measurements_path, ext = QtWidgets.QFileDialog.getOpenFileName(self, 'Select CS Image measurements.')
+        default = os.path.join(os.getcwd(), 'cs_test_samples/')
+        self.cs_measurements_path, ext = QtWidgets.QFileDialog.getOpenFileName(self, 'Select CS Image measurements.', default)
         self.csMeasurementsPathLine.setText(self.cs_measurements_path)
     
     def select_phi(self):
-        self.phi_path, ext = QtWidgets.QFileDialog.getOpenFileName(self, 'Select sampling matrix.')
+        default = os.path.join(os.getcwd(), 'image_processing/ista/sampling_matrix/')
+        self.phi_path, ext = QtWidgets.QFileDialog.getOpenFileName(self, 'Select sampling matrix.', default)
         self.samplingMatrixPathLine.setText(self.phi_path)
 
     def select_qinit(self):
-        self.qinit_path, ext = QtWidgets.QFileDialog.getOpenFileName(self, 'Select initialization matrix.')
+        default = os.path.join(os.getcwd(), 'image_processing/ista/initialization_matrix/')
+        self.qinit_path, ext = QtWidgets.QFileDialog.getOpenFileName(self, 'Select initialization matrix.', default)
         self.initializationMatrixPathLine.setText(self.qinit_path)
+
+    def select_orig_image(self):
+        default = os.path.join(os.getcwd(), 'data/')
+        self.orig_img_path, ext = QtWidgets.QFileDialog.getOpenFileName(self, 'Select original image.', default)
+        self.origImagePathLine.setText(self.orig_img_path)
 
 
 
@@ -92,6 +194,32 @@ class NetMDSettings(settings.Ui_SettingsWindow, QtWidgets.QMainWindow):
         self.actionHome.triggered.connect(self.home)
         self.actionInstructions.triggered.connect(self.instructions)
 
+        # Buttons
+        self.istaToolButton.clicked.connect(self.select_ista_model_dir)
+        self.rcmddToolButton.clicked.connect(self.select_rcmdd_model_dir)
+
+        self.saveSettingsButton.clicked.connect(self.saveSettings)
+
+        # Defaults
+        self.ista_models_dir = os.path.join(os.getcwd(), 'image_processing/ista/model/RCM/')
+        self.istaPathLine.setText(self.ista_models_dir)
+
+        self.rcmdd_models_dir = os.path.join(os.getcwd(), 'image_processing/rcmdd/model/RCM/')
+        self.rcmddPathLine.setText(os.path.join(os.getcwd(), 'image_processing/rcmdd/model/RCM/'))
+
+    def select_ista_model_dir(self):
+        default = os.path.join(os.getcwd(), 'image_processing/ista/model/')
+        self.ista_models_dir = str(QtWidgets.QFileDialog.getExistingDirectory(self, "Select ISTA-Net Models Directory", default))
+        self.istaPathLine.setText(self.ista_models_dir)
+
+    def select_rcmdd_model_dir(self):
+        default = os.path.join(os.getcwd(), 'image_processing/rcmdd/model/')
+        self.rcmdd_models_dir = str(QtWidgets.QFileDialog.getExistingDirectory(self, "Select RCMDD Models Directory", default))
+        self.rcmddPathLine.setText(self.rcmdd_models_dir)
+
+    def saveSettings(self):
+        self.parent().home.ista_models_dir = self.ista_models_dir
+        self.parent().home.rcmdd_models_dir = self.rcmdd_models_dir
 
     def instructions(self):
         self.hide()
@@ -102,8 +230,6 @@ class NetMDSettings(settings.Ui_SettingsWindow, QtWidgets.QMainWindow):
         self.hide()
         self.parent().get_started()
         
-
-
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication()

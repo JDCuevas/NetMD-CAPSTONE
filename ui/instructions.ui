@@ -6,9 +6,27 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>727</width>
-    <height>854</height>
+    <width>1076</width>
+    <height>1191</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>2000000</width>
+    <height>1999998</height>
+   </size>
+  </property>
+  <property name="baseSize">
+   <size>
+    <width>0</width>
+    <height>800</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Instructions</string>
@@ -37,9 +55,43 @@
              <height>100</height>
             </size>
            </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
            <property name="plainText">
-            <string>Instructions:
-</string>
+            <string>Welcome!
+
+	NetMD is an easy-to-use, easy-to-learn tool for recovery of compressively sampled (CS) Reflectance Confocal Microscopy (RCM) images of skin. 
+
+
+Instructions:
+
+1- Upload to NetMD your compessed samples, alongside the sampling matrix used to collect the images.
+
+2- Specify the cs ratio used to collect the images.
+
+3- Indicate the expected width and height of the output image.
+
+4- Reconstruct the image using the neural network backend!
+
+
+Optional:
+
+- Calculate Singal-to-Noise Ratio (SNR) -
+
+1- Reconstruct the image from the cs measurements.
+
+2- Upload the original full-sized image if available.
+
+3- Calculate the Signal-to-Noise Ratio (SNR).
+
+
+- Change Neural Network Models - 
+
+	If you've trained alternate models using the train.py files located inside the program's ISTA-Net and RCMDD respective module folders, you can change the models the network is using in the settings page by selecting the folder where the models where saved. For example, the default ISTA-Net and RCMDD models for RCM image recovery are saved in the 'image_processing/ista/model/RCM/'  and 'image_processing/rcmdd/model/RCM/' directories respectively.
+
+For more information on model training visit:
+https://github.com/JDCuevas/NetMD-CAPSTONE</string>
            </property>
           </widget>
          </item>
@@ -112,7 +164,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>727</width>
+     <width>1076</width>
      <height>39</height>
     </rect>
    </property>

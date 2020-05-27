@@ -1,3 +1,4 @@
+import cv2
 import math
 import torch
 import h5py
@@ -54,6 +55,32 @@ def psnr(img1, img2):
     PIXEL_MAX = 255.0
     return 20 * math.log10(PIXEL_MAX / math.sqrt(mse))
 
+def snr(orig_img, recon_img):
+    orig_img.astype(np.float32)
+    recon_img.astype(np.float32)
+
+    orig_img = orig_img.reshape((-1))
+    recon_img = recon_img.reshape((-1))
+
+    signal = orig_img
+    noise = recon_img - orig_img
+
+    per_pixel_snr = []
+
+    for i in range(len(signal)):
+        if noise[i] != 0:
+            per_pixel_snr.append(signal[i] / noise[i])
+
+    snr = np.mean(np.array(per_pixel_snr))
+    
+    return snr
+
+def extract_luminance(img):
+    img_yuv = cv2.cvtColor(img, cv2.COLOR_BGR2YCrCb)
+    img_y = img_yuv[:,:,0]
+
+    return img_y
+
 class RandomDataset(Dataset):
     def __init__(self, data, length):
         self.data = data
@@ -76,7 +103,6 @@ def load_dataset(dataset_path):
         with h5py.File(dataset_path, 'r') as training_data:
             training_labels = training_data['labels']
             training_labels = np.array(training_labels)
-
     else:
         print('Dataset file must be in .mat or .hdf5 file format.')
 

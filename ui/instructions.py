@@ -3,18 +3,24 @@
 # Form implementation generated from reading ui file 'ui/instructions.ui',
 # licensing of 'ui/instructions.ui' applies.
 #
-# Created: Mon May 18 13:53:11 2020
+# Created: Wed May 27 17:08:33 2020
 #      by: pyside2-uic  running on PySide2 5.9.0~a1
 #
 # WARNING! All changes made in this file will be lost!
 
 from PySide2 import QtCore, QtGui, QtWidgets
-import icons_rc
 
 class Ui_InstructionsWindow(object):
     def setupUi(self, InstructionsWindow):
         InstructionsWindow.setObjectName("InstructionsWindow")
-        InstructionsWindow.resize(727, 854)
+        InstructionsWindow.resize(1076, 1191)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(InstructionsWindow.sizePolicy().hasHeightForWidth())
+        InstructionsWindow.setSizePolicy(sizePolicy)
+        InstructionsWindow.setMaximumSize(QtCore.QSize(2000000, 1999998))
+        InstructionsWindow.setBaseSize(QtCore.QSize(0, 800))
         self.centralwidget = QtWidgets.QWidget(InstructionsWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
@@ -30,6 +36,7 @@ class Ui_InstructionsWindow(object):
         self.verticalLayout.setObjectName("verticalLayout")
         self.instructions = QtWidgets.QPlainTextEdit(self.frame)
         self.instructions.setMinimumSize(QtCore.QSize(100, 100))
+        self.instructions.setReadOnly(True)
         self.instructions.setObjectName("instructions")
         self.verticalLayout.addWidget(self.instructions)
         self.startButton = QtWidgets.QPushButton(self.frame)
@@ -57,7 +64,7 @@ class Ui_InstructionsWindow(object):
         self.gridLayout.addWidget(self.frame, 0, 0, 1, 1)
         InstructionsWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(InstructionsWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 727, 39))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1076, 39))
         self.menubar.setObjectName("menubar")
         InstructionsWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(InstructionsWindow)
@@ -69,6 +76,39 @@ class Ui_InstructionsWindow(object):
 
     def retranslateUi(self, InstructionsWindow):
         InstructionsWindow.setWindowTitle(QtWidgets.QApplication.translate("InstructionsWindow", "Instructions", None, -1))
-        self.instructions.setPlainText(QtWidgets.QApplication.translate("InstructionsWindow", "Instructions:\n"
-"", None, -1))
+        self.instructions.setPlainText(QtWidgets.QApplication.translate("InstructionsWindow", "Welcome!\n"
+"\n"
+"    NetMD is an easy-to-use, easy-to-learn tool for recovery of compressively sampled (CS) Reflectance Confocal Microscopy (RCM) images of skin. \n"
+"\n"
+"\n"
+"Instructions:\n"
+"\n"
+"1- Upload to NetMD your compessed samples, alongside the sampling matrix used to collect the images.\n"
+"\n"
+"2- Specify the cs ratio used to collect the images.\n"
+"\n"
+"3- Indicate the expected width and height of the output image.\n"
+"\n"
+"4- Reconstruct the image using the neural network backend!\n"
+"\n"
+"\n"
+"Optional:\n"
+"\n"
+"- Calculate Singal-to-Noise Ratio (SNR) -\n"
+"\n"
+"1- Reconstruct the image from the cs measurements.\n"
+"\n"
+"2- Upload the original full-sized image if available.\n"
+"\n"
+"3- Calculate the Signal-to-Noise Ratio (SNR).\n"
+"\n"
+"\n"
+"- Change Neural Network Models - \n"
+"\n"
+"    If you\'ve trained alternate models using the train.py files located inside the program\'s ISTA-Net and RCMDD respective module folders, you can change the models the network is using in the settings page by selecting the folder where the models where saved. For example, the default ISTA-Net and RCMDD models for RCM image recovery are saved in the \'image_processing/ista/model/RCM/\'  and \'image_processing/rcmdd/model/RCM/\' directories respectively.\n"
+"\n"
+"For more information on model training visit:\n"
+"https://github.com/JDCuevas/NetMD-CAPSTONE", None, -1))
         self.startButton.setText(QtWidgets.QApplication.translate("InstructionsWindow", "Get Started", None, -1))
+
+import icons_rc

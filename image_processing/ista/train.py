@@ -16,7 +16,7 @@ parser = ArgumentParser(description='Train ISTA-Net-plus')
 parser.add_argument('--start_epoch', type=int, default=0, help='epoch number of start training')
 parser.add_argument('--end_epoch', type=int, default=200, help='epoch number of end training')
 parser.add_argument('--batch_size', type=int, default=64, help='epoch number of end training')
-parser.add_argument('--cs_ratio', type=int, default=10, help='from {1, 4, 10, 25, 40, 50}')
+parser.add_argument('--cs_ratio', type=int, required=True, help='from {10, 25, 50}')
 
 parser.add_argument('--matrix_path', type=str, required=True, help='path to sampling matrix')
 parser.add_argument('--qinit_path', type=str, help='path to initialization matrix')
