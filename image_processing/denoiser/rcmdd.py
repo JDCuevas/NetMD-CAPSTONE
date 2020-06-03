@@ -1,16 +1,17 @@
 import os
 import cv2
+import math
 import torch
 import platform
 import torch.nn as nn
 import scipy.io as sio
 import numpy as np
 from torch.utils.data import Dataset, DataLoader
-from toolbox import RandomDataset
+from toolbox import RandomDataset, shuffle_in_unison
 
-class RCMDDModel(nn.Module):
+class RCMDD_Architecure(nn.Module):
     def __init__(self):
-        super(RCMDDModel, self).__init__()
+        super(RCMDD_Architecure, self).__init__()
 
         #encode layers
         self.encoder = nn.Sequential(
@@ -41,7 +42,7 @@ class RCMDD():
     def __init__(self):
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-        self.model = RCMDDModel()
+        self.model = RCMDD_Architecure()
         self.model = nn.DataParallel(self.model)
         self.model = self.model.to(self.device)
 
@@ -61,8 +62,9 @@ class RCMDD():
     def load_model(self, model_path):
         self.model.load_state_dict(torch.load(model_path, map_location=torch.device(self.device)))    
 
-    def _train(self, dataset, batch_size, start_epoch, end_epoch, cs_ratio, model_dir, log_dir):
-        train_size = dataset.shape[0]
+    def _train(self, X_train, y_train, batch_size, start_epoch, end_epoch, cs_ratio, model_dir, log_dir):
+        num_batches = math.floor(X_train.shape[0] / batch_size)
+
         mse = nn.MSELoss() 
         optimizer = torch.optim.Adam(self.model.parameters(), lr=1-4)
 
@@ -74,28 +76,21 @@ class RCMDD():
         if not os.path.exists(log_dir):
             os.makedirs(log_dir)
 
-
-        if (platform.system() =="Windows"):
-            rand_loader = DataLoader(dataset=RandomDataset(dataset, train_size), batch_size=batch_size, num_workers=0,
-                                    shuffle=True)
-        else:
-            rand_loader = DataLoader(dataset=RandomDataset(dataset, train_size), batch_size=batch_size, num_workers=4,
-                                    shuffle=True)
-
-
         if start_epoch > 0:
             pre_model_dir = model_dir
             self.model.load_state_dict(torch.load('./%s/net_params_%d.pkl' % (pre_model_dir, start_epoch)))
 
-        outputs = []
+        shuffle_in_unison(X_train, y_train)
 
         for epoch_i in range(start_epoch + 1, end_epoch + 1):
-            for data in rand_loader:
-                imgs = data
+            for idx in range(num_batches):
+                noisy_imgs = X_train[idx * batch_size: (idx * batch_size) + batch_size]
 
-                recon = self.model(imgs)
+                denoised_img = self.model(noisy_imgs)
 
-                loss = mse(recon, imgs)
+                orig_imgs = y_train[idx * batch_size: (idx * batch_size) + batch_size]
+
+                loss = mse(denoised_img, orig_imgs)
 
                 loss.backward()
                 optimizer.step()
@@ -109,6 +104,6 @@ class RCMDD():
                 output_file.close()
 
             if epoch_i % 5 == 0 and epoch_i != end_epoch:
-                torch.save(self.model.state_dict(), "./%s/net_params_%d.pkl" % (model_dir, epoch_i))  # save only the parameters
+                torch.save(self.model.state_dict(), "./%s/net_params_%d.pkl" % (model_dir, epoch_i))  
             elif epoch_i == end_epoch:
                 torch.save(self.model.state_dict(), "./%s/net_params.pkl" % (model_dir))

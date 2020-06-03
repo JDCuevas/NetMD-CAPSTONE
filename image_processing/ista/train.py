@@ -1,6 +1,5 @@
 import os
 import platform
-
 import glob
 import numpy as np
 import scipy.io as sio
@@ -16,36 +15,43 @@ parser = ArgumentParser(description='Train ISTA-Net-plus')
 parser.add_argument('--start_epoch', type=int, default=0, help='epoch number of start training')
 parser.add_argument('--end_epoch', type=int, default=200, help='epoch number of end training')
 parser.add_argument('--batch_size', type=int, default=64, help='epoch number of end training')
-parser.add_argument('--cs_ratio', type=int, required=True, help='from {10, 25, 50}')
+parser.add_argument('--cs_ratio', type=int, required=True, help='cs ratio used to create dataset')
 
-parser.add_argument('--matrix_path', type=str, required=True, help='path to sampling matrix')
-parser.add_argument('--qinit_path', type=str, help='path to initialization matrix')
 parser.add_argument('--model_dir', type=str, default='model', help='trained or pre-trained model directory')
 parser.add_argument('--data_dir', type=str, default='../../data', help='data directory')
-parser.add_argument('--dataset_name', type=str, default='RCM', help='dataset name')
+parser.add_argument('--dataset_name', type=str, default='RCM', help='dataset directory inside data directory')
 parser.add_argument('--log_dir', type=str, default='log', help='log directory')
+
+parser.add_argument('--sampling_matrix', type=str, required=True, help='path to sampling matrix')
+parser.add_argument('--initialization_matrix', type=str, help='path to initialization matrix')
 
 args = parser.parse_args()
 
+
+# Arguments
 start_epoch = args.start_epoch
 end_epoch = args.end_epoch
 batch_size = args.batch_size
 cs_ratio = args.cs_ratio
-phi_path = args.matrix_path
-qinit_path = args.qinit_path
+phi_path = args.sampling_matrix
+qinit_path = args.initialization_matrix
 data_dir = args.data_dir
 dataset_name = args.dataset_name
 model_dir = args.model_dir
 log_dir = args.log_dir
 
-dataset_path = glob.glob(data_dir + '/' + dataset_name + '/*Training_Data_ISTA*')[0]
 
+# Load Dataset
+dataset_path = glob.glob('%s/%s/*Training_Data_ISTA*' % (data_dir, dataset_name))[0]
 training_labels = load_dataset(dataset_path)
 
+# Train Model
 ista_net = ISTA_Net()
+
+## Loading Sampling Matrix
 ista_net.load_phi(phi_path)
 
-# Computing Initialization Matrix:
+## Computing Initialization Matrix:
 if qinit_path:
     qinit_data = sio.loadmat(qinit_path)
     qinit = qinit_data['Qinit']

@@ -6,7 +6,7 @@ import numpy as np
 import scipy.io as sio
 import platform
 from argparse import ArgumentParser
-from toolbox import load_dataset
+from toolbox import load_dataset_rcmdd
 
 parser = ArgumentParser(description='RCMDD')
 
@@ -16,16 +16,16 @@ parser.add_argument('--batch_size', type=int, default=128, help='batch size for 
 parser.add_argument('--cs_ratio', type=int, required=True, help='cs ratio used to create dataset')
 
 parser.add_argument('--model_dir', type=str, default='model', help='trained or pre-trained model directory')
-parser.add_argument('--data_dir', type=str, default='../../data', help='training data directory')
-parser.add_argument('--dataset_name', type=str, required=True, help='dataset name')
+parser.add_argument('--data_dir', type=str, default='../../data', help='data directory')
 parser.add_argument('--log_dir', type=str, default='log', help='log directory')
 
 args = parser.parse_args()
 
+
+# Arguments
 start_epoch = args.start_epoch
 end_epoch = args.end_epoch
 batch_size = args.batch_size
-learning_rate = args.learning_rate
 dataset = args.dataset
 cs_ratio = args.cs_ratio
 
@@ -34,15 +34,14 @@ data_dir = args.data_dir
 dataset_name = args.dataset_name
 log_dir = args.log_dir
 
+# Load Dataset
+dataset_path = glob.glob('%s/%s/*Training_Data_RCMDD*' % (data_dir, dataset_name))[0]
+X_train, y_train = load_dataset_rcmdd(dataset_path)
 
-training_data_dir = '%s/%s' % (data_dir, dataset)
-dataset_path = glob.glob('%s/*Training_Data_RCMDD_cs_%d*' % (training_data_dir, cs_ratio))[0]
-
-training_labels = load_dataset(dataset_path)
-
+# Train model
 model = rcmdd.RCMDD()
 
 model_save_dir = '%s/%s' % (model_dir, dataset_name)
 log_save_dir = '%s/%s' % (log_dir, dataset_name)
 
-model.train(training_labels, batch_size, start_epoch, end_epoch, cs_ratio, model_dir, log_dir)
+model.train(X_train, y_train, batch_size, start_epoch, end_epoch, cs_ratio, model_dir, log_dir)

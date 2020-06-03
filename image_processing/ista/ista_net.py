@@ -11,9 +11,9 @@ from torch.nn import init
 from torch.utils.data import Dataset, DataLoader
 from toolbox import imread_CS_py, img2col_py, col2im_CS_py, RandomDataset
 
-class BasicBlock(torch.nn.Module):
+class Basic_ISTA_Block(torch.nn.Module):
     def __init__(self):
-        super(BasicBlock, self).__init__()
+        super(Basic_ISTA_Block, self).__init__()
 
         self.lambda_step = nn.Parameter(torch.Tensor([0.5]))
         self.soft_thr = nn.Parameter(torch.Tensor([0.01]))
@@ -59,14 +59,14 @@ class BasicBlock(torch.nn.Module):
 
 
 # Define ISTA-Net-plus
-class ISTANetModel(torch.nn.Module):
-    def __init__(self, LayerNo):
-        super(ISTANetModel, self).__init__()
+class ISTA_Net_Architecture(torch.nn.Module):
+    def __init__(self, layer_num):
+        super(ISTA_Net_Architecture, self).__init__()
         onelayer = []
-        self.LayerNo = LayerNo
+        self.layer_num = layer_num
 
-        for i in range(LayerNo):
-            onelayer.append(BasicBlock())
+        for i in range(layer_num):
+            onelayer.append(Basic_ISTA_Block())
 
         self.fcs = nn.ModuleList(onelayer)
 
@@ -79,7 +79,7 @@ class ISTANetModel(torch.nn.Module):
 
         layers_sym = []   # for computing symmetric loss
 
-        for i in range(self.LayerNo):
+        for i in range(self.layer_num):
             [x, layer_sym] = self.fcs[i](x, PhiTPhi, PhiTb)
             layers_sym.append(layer_sym)
 
@@ -95,11 +95,9 @@ class ISTA_Net():
         self.layer_num = 9 
         self.block_size = 33
 
-        self.model = ISTANetModel(self.layer_num)
+        self.model = ISTA_Net_Architecture(self.layer_num)
         self.model = nn.DataParallel(self.model)
         self.model = self.model.to(self.device)
-
-        self.last_rec = None
 
     def reconstruct(self, cs_measurements, orig_width, orig_height):
         Phix = cs_measurements
@@ -120,9 +118,6 @@ class ISTA_Net():
         img_rec = X_rec * 255
 
         del X_output
-
-        #img_rec_gray = np.zeros((orig_width, orig_height, 3))
-        #img_rec_gray[:,:,0] = img_rec
 
         return img_rec
 

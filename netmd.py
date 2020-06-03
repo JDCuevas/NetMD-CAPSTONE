@@ -5,21 +5,22 @@ import numpy as np
 import scipy.io as sio
 from PySide2 import QtWidgets, QtCore, QtGui
 from ui import instructions, home, settings
-from image_processing.ista.ista_net import ISTA_Net
-from image_processing.denoiser import RCMDD
-from image_processing.ista.toolbox import snr, extract_luminance
+from image_processing import Image_Processor, snr, extract_luminance
+from argparse import ArgumentParser
 
 
 
 class NetMDInstructions(instructions.Ui_InstructionsWindow, QtWidgets.QMainWindow):
 
-    def __init__(self):
+    def __init__(self, args):
         super(NetMDInstructions, self).__init__()
         self.setupUi(self)
         self.setMinimumHeight(750)
         self.setMinimumWidth(1250)
         self.startButton.clicked.connect(self.get_started)
         
+        self.args = args
+
         self.home = NetMDHome(self)
         self.settings = NetMDSettings(self)
 
@@ -39,7 +40,7 @@ class NetMDHome(home.Ui_HomeWindow, QtWidgets.QMainWindow):
         self.setMinimumHeight(750)
         self.setMinimumWidth(1250)
         self.actionSettings.triggered.connect(self.settings)
-        self.actionIntructions.triggered.connect(self.instructions)
+        self.actionInstructions.triggered.connect(self.instructions)
 
         # Buttons
         self.csMeasurementsButton.clicked.connect(self.select_cs)
@@ -50,12 +51,6 @@ class NetMDHome(home.Ui_HomeWindow, QtWidgets.QMainWindow):
         self.reconstructButton.clicked.connect(self.reconstruct)
         self.snrButton.clicked.connect(self.calculate_snr)
         self.saveButton.clicked.connect(self.save)
-
-        # Defaults
-        #self.csMeasurementsPathLine.setText(os.path.join(os.getcwd(), 'cs_test_samples/Natural_Images/cs_25/barbara_cs.mat'))
-        #self.samplingMatrixPathLine.setText(os.path.join(os.getcwd(), 'image_processing/ista/sampling_matrix/phi_0_25_1089.mat'))
-        #self.initializationMatrixPathLine.setText(os.path.join(os.getcwd(), 'image_processing/ista/initialization_matrix/Natural_Images/Initialization_Matrix_25.mat'))
-        #self.origImagePathLine.setText(os.path.join(os.getcwd(), 'data/Natural_Images/testing_imgs/barbara.tif'))
 
         self.csRatiosComboBox.setCurrentIndex(1)
 
@@ -69,15 +64,14 @@ class NetMDHome(home.Ui_HomeWindow, QtWidgets.QMainWindow):
     
         self.img_recon = None
         self.img_recon_flag = False
-        
-        self.ista_net = ISTA_Net()
-        self.rcmdd = RCMDD()
+
+        self.denoiser_status = self.parent().args.denoiser
+        self.image_processor = Image_Processor(self.denoiser_status)
         
 
     def instructions(self):
         self.hide()
         self.parent().show()
-        self.close()
 
     def settings(self):
         self.hide()
@@ -116,16 +110,10 @@ class NetMDHome(home.Ui_HomeWindow, QtWidgets.QMainWindow):
         cs_measurements = np.array(sio.loadmat(cs_measurements_path)['cs_measurements'])
         cs_ratio = int(self.csRatiosComboBox.currentText())
 
-        self.ista_net.load_phi(phi_path)
-        self.ista_net.load_qinit(qinit_path)
-        self.ista_net.load_model(os.path.join(self.ista_models_dir, 'CS_ISTA_Net_plus_ratio_%d/net_params.pkl' % (cs_ratio)))
-        #self.rcmdd.load_model(os.path.join(self.rcmdd_models_dir, 'RCMDD_ratio_%d/net_params.pkl' % (cs_ratio)))
-       
-        # Reconstruct and denoise CS image
-        self.img_recon = self.ista_net.reconstruct(cs_measurements, width, height)
+        self.image_processor.load_models(self.ista_models_dir, self.rcmdd_models_dir, cs_ratio)
+        self.img_recon = self.image_processor.process(cs_measurements, width, height, phi_path, qinit_path)
         self.img_recon_flag = True
-        #self.img_recon = self.rcmdd.denoise(self.img_recon)
-
+            
         # Preview reconstruction
         cv2.imwrite('tmp.png', self.img_recon)
         self.img_recon = cv2.imread('tmp.png')
@@ -224,7 +212,6 @@ class NetMDSettings(settings.Ui_SettingsWindow, QtWidgets.QMainWindow):
     def instructions(self):
         self.hide()
         self.parent().show()
-        self.close()
 
     def home(self):
         self.hide()
@@ -232,7 +219,11 @@ class NetMDSettings(settings.Ui_SettingsWindow, QtWidgets.QMainWindow):
         
 
 if __name__ == '__main__':
+    parser = ArgumentParser(description='Train ISTA-Net-plus')
+    parser.add_argument('--denoiser', type=str, default='on', help='set denoiser on/off')
+    args = parser.parse_args()
+
     app = QtWidgets.QApplication()
-    qt_app = NetMDInstructions()
+    qt_app = NetMDInstructions(args)
     qt_app.show()
     app.exec_()

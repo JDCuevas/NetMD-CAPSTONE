@@ -88,7 +88,7 @@ Optional:
 
 - Change Neural Network Models - 
 
-	If you've trained alternate models using the train.py files located inside the program's ISTA-Net and RCMDD respective module folders, you can change the models the network is using in the settings page by selecting the folder where the models where saved. For example, the default ISTA-Net and RCMDD models for RCM image recovery are saved in the 'image_processing/ista/model/RCM/'  and 'image_processing/rcmdd/model/RCM/' directories respectively.
+	If you've trained alternate models using the train.py files located inside the program's ISTA-Net and RCMDD respective module folders, you can change the models the network is using in the settings page by selecting the folder where the models where saved. For example, the default ISTA-Net and RCMDD models for RCM image recovery are saved in the 'image_processing/ista/model/RCM/'  and 'image_processing/rcmdd/model/RCM/' directories respectively. NOTE: The models must be named the same as the ones provided with the program, where the only thing that changes is the CS ratio in the name.
 
 For more information on model training visit:
 https://github.com/JDCuevas/NetMD-CAPSTONE</string>
@@ -165,7 +165,7 @@ https://github.com/JDCuevas/NetMD-CAPSTONE</string>
      <x>0</x>
      <y>0</y>
      <width>1076</width>
-     <height>39</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>

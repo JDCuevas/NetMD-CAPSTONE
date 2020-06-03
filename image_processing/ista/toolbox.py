@@ -107,3 +107,9 @@ def load_dataset(dataset_path):
         print('Dataset file must be in .mat or .hdf5 file format.')
 
     return training_labels
+
+def shuffle_in_unison(a, b):
+    rng_state = np.random.get_state()
+    np.random.shuffle(a)
+    np.random.set_state(rng_state)
+    np.random.shuffle(b)
