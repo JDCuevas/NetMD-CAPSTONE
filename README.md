@@ -21,6 +21,8 @@ Alternatively, as the denoiser has yet to be trained, you can run the program by
 
 Once up and running, you'll be greeted with an instructions screens that contains everything you need to know on how to use the features available to you!
 
+*NOTE* NetMD accepts cs measurements as a .mat file with an array accessed through the key 'cs_measuremets' of shape [num_img_blocks, 1089 * cs_ratio] where cs_ratio is 10, 25 or 50 for 10%, 25% or 50%.
+
 ## How to train neural network backend
 
 NetMD's backend consists of two neural networks: 
@@ -75,3 +77,16 @@ Given that we were unable to train the networks on our RCM skin stack dataset we
   * Inside the data file, are two accessable arrays through the keys 'X_train' and 'y_train', where X_train are the noisy images and y_train are the original noiseless images.
   * 'X_train' and 'y_train' arrays have the shape: [num_imgs, img_width, img_height] 
  * The training data should be constructed with the train ISTA-Net models, as the noisy input images that make X_train should come from ISTA-Net.
+
+### To simulate cs measurements from images for testing NetMD
+
+Inside the `data` folder is a file `simulate_cs.py` that takes the following arguments:
+* --image -> path to image
+* --sampling_matrix -> path to sampling_matrix
+* --dataset_name ->  dataset name in the data folder image is drawn from
+* --cs_ratio -> cs sampling ratio to simulate
+
+This file when run will output a .mat file to the `../cs_test_samples/ + dataset_name + /cs_ + cs_ratio + /'` folder with simulated cs measurements that can be inputted into NetMD for reconstruction.
+
+### To replicate final report evaluation metrics of ISTA-Net
+Run the `evaluation_psnr_ssim.py` file in the project's root directory
