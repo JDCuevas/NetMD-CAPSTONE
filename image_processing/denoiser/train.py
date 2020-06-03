@@ -17,6 +17,7 @@ parser.add_argument('--cs_ratio', type=int, required=True, help='cs ratio used t
 
 parser.add_argument('--model_dir', type=str, default='model', help='trained or pre-trained model directory')
 parser.add_argument('--data_dir', type=str, default='../../data', help='data directory')
+parser.add_argument('--dataset_name', type=str, default='RCM', help='dataset directory inside data directory')
 parser.add_argument('--log_dir', type=str, default='log', help='log directory')
 
 args = parser.parse_args()

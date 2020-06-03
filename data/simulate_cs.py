@@ -10,7 +10,7 @@ parser = ArgumentParser(description='Train ISTA-Net-plus')
 
 parser.add_argument('--image', type=str, help='path to image')
 parser.add_argument('--sampling_matrix', type=str, required=True, help='path to sampling_matrix')
-parser.add_argument('--dataset', type=str, default='RCM', help='image dataset name')
+parser.add_argument('--dataset_name', type=str, default='RCM', help='image dataset name')
 parser.add_argument('--cs_ratio', type=str, required=True, help='cs ratio')
 
 
@@ -19,6 +19,7 @@ args = parser.parse_args()
 image_path = args.image
 phi_path = args.sampling_matrix
 cs_ratio = args.cs_ratio
+dataset_name = args.dataset_name
 
 
 def imread_CS_py(Iorg):
@@ -64,7 +65,7 @@ vectorized_img_blocks = img2col_py(Ipad, 33).transpose()/255.0
 
 cs_measurements = np.dot(vectorized_img_blocks, np.transpose(phi))
 
-output_dir = '../cs_test_samples/' + args.dataset + '/cs_' + cs_ratio + '/' 
+output_dir = '../cs_test_samples/' + dataset_name + '/cs_' + cs_ratio + '/' 
 
 if not os.path.exists(output_dir):
         os.makedirs(output_dir)

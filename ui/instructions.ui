@@ -66,13 +66,22 @@
 
 Instructions:
 
-1- Upload to NetMD your compessed samples, alongside the sampling matrix used to collect the images.
+1- Upload your compessed sample.
 
-2- Specify the cs ratio used to collect the images.
+2- Upload the sampling matrix used to collect the images. 
 
-3- Indicate the expected width and height of the output image.
+	- Expected to be a .mat file with an array accessed through key 		
+	'cs_measurements'
 
-4- Reconstruct the image using the neural network backend!
+	- Array must have shape:
+ 		[num_img_blocks, 1089 * cs sampling ratio]
+	where cs sampling ratio is 10, 25 or 50 for 10%, 25% or 50%.
+
+3 - Upload the initialization matrix for the initial guess, used during network training. (Some provided in 'image_processing/ista/initialization_matrix/')
+
+4- Indicate the expected width and height of the output image.
+
+5- Reconstruct the image using the neural network backend!
 
 
 Optional:
@@ -165,7 +174,7 @@ https://github.com/JDCuevas/NetMD-CAPSTONE</string>
      <x>0</x>
      <y>0</y>
      <width>1076</width>
-     <height>22</height>
+     <height>39</height>
     </rect>
    </property>
   </widget>

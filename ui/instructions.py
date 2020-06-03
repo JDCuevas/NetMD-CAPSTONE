@@ -1,116 +1,104 @@
 # -*- coding: utf-8 -*-
 
-################################################################################
-## Form generated from reading UI file 'instructions.ui'
-##
-## Created by: Qt User Interface Compiler version 5.14.2
-##
-## WARNING! All changes made in this file will be lost when recompiling UI file!
-################################################################################
+# Form implementation generated from reading ui file 'ui/instructions.ui',
+# licensing of 'ui/instructions.ui' applies.
+#
+# Created: Wed Jun  3 01:15:41 2020
+#      by: pyside2-uic  running on PySide2 5.9.0~a1
+#
+# WARNING! All changes made in this file will be lost!
 
-from PySide2.QtCore import (QCoreApplication, QDate, QDateTime, QMetaObject,
-    QObject, QPoint, QRect, QSize, QTime, QUrl, Qt)
-from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont,
-    QFontDatabase, QIcon, QKeySequence, QLinearGradient, QPalette, QPainter,
-    QPixmap, QRadialGradient)
-from PySide2.QtWidgets import *
-
-import icons_rc
+from PySide2 import QtCore, QtGui, QtWidgets
 
 class Ui_InstructionsWindow(object):
     def setupUi(self, InstructionsWindow):
-        if not InstructionsWindow.objectName():
-            InstructionsWindow.setObjectName(u"InstructionsWindow")
+        InstructionsWindow.setObjectName("InstructionsWindow")
         InstructionsWindow.resize(1076, 1191)
-        sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(InstructionsWindow.sizePolicy().hasHeightForWidth())
         InstructionsWindow.setSizePolicy(sizePolicy)
-        InstructionsWindow.setMaximumSize(QSize(2000000, 1999998))
-        InstructionsWindow.setBaseSize(QSize(0, 800))
-        self.centralwidget = QWidget(InstructionsWindow)
-        self.centralwidget.setObjectName(u"centralwidget")
-        self.gridLayout = QGridLayout(self.centralwidget)
-        self.gridLayout.setObjectName(u"gridLayout")
-        self.frame = QFrame(self.centralwidget)
-        self.frame.setObjectName(u"frame")
-        self.frame.setFrameShape(QFrame.StyledPanel)
-        self.frame.setFrameShadow(QFrame.Raised)
-        self.gridLayout_2 = QGridLayout(self.frame)
-        self.gridLayout_2.setObjectName(u"gridLayout_2")
-        self.verticalLayout = QVBoxLayout()
+        InstructionsWindow.setMaximumSize(QtCore.QSize(2000000, 1999998))
+        InstructionsWindow.setBaseSize(QtCore.QSize(0, 800))
+        self.centralwidget = QtWidgets.QWidget(InstructionsWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
+        self.gridLayout.setObjectName("gridLayout")
+        self.frame = QtWidgets.QFrame(self.centralwidget)
+        self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.frame.setObjectName("frame")
+        self.gridLayout_2 = QtWidgets.QGridLayout(self.frame)
+        self.gridLayout_2.setObjectName("gridLayout_2")
+        self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setSpacing(7)
-        self.verticalLayout.setObjectName(u"verticalLayout")
-        self.instructions = QPlainTextEdit(self.frame)
-        self.instructions.setObjectName(u"instructions")
-        self.instructions.setMinimumSize(QSize(100, 100))
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.instructions = QtWidgets.QPlainTextEdit(self.frame)
+        self.instructions.setMinimumSize(QtCore.QSize(100, 100))
         self.instructions.setReadOnly(True)
-
+        self.instructions.setObjectName("instructions")
         self.verticalLayout.addWidget(self.instructions)
-
-        self.startButton = QPushButton(self.frame)
-        self.startButton.setObjectName(u"startButton")
-        self.startButton.setMinimumSize(QSize(20, 20))
-        self.startButton.setStyleSheet(u"color: rgb(85, 170, 255);\n"
+        self.startButton = QtWidgets.QPushButton(self.frame)
+        self.startButton.setMinimumSize(QtCore.QSize(20, 20))
+        self.startButton.setStyleSheet("color: rgb(85, 170, 255);\n"
 "")
-
+        self.startButton.setObjectName("startButton")
         self.verticalLayout.addWidget(self.startButton)
-
-
         self.gridLayout_2.addLayout(self.verticalLayout, 1, 0, 1, 1)
-
-        self.logoLabel = QLabel(self.frame)
-        self.logoLabel.setObjectName(u"logoLabel")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.logoLabel.sizePolicy().hasHeightForWidth())
-        self.logoLabel.setSizePolicy(sizePolicy1)
-        self.logoLabel.setMinimumSize(QSize(100, 100))
-        self.logoLabel.setMaximumSize(QSize(200, 200))
-        self.logoLabel.setBaseSize(QSize(50, 0))
-#if QT_CONFIG(accessibility)
-        self.logoLabel.setAccessibleDescription(u"")
-#endif // QT_CONFIG(accessibility)
-        self.logoLabel.setPixmap(QPixmap(u":/images/images/NetMD_logo.png"))
+        self.logoLabel = QtWidgets.QLabel(self.frame)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.logoLabel.sizePolicy().hasHeightForWidth())
+        self.logoLabel.setSizePolicy(sizePolicy)
+        self.logoLabel.setMinimumSize(QtCore.QSize(100, 100))
+        self.logoLabel.setMaximumSize(QtCore.QSize(200, 200))
+        self.logoLabel.setBaseSize(QtCore.QSize(50, 0))
+        self.logoLabel.setAccessibleDescription("")
+        self.logoLabel.setText("")
+        self.logoLabel.setPixmap(QtGui.QPixmap(":/images/images/NetMD_logo.png"))
         self.logoLabel.setScaledContents(True)
-
+        self.logoLabel.setObjectName("logoLabel")
         self.gridLayout_2.addWidget(self.logoLabel, 0, 0, 1, 1)
-
-
         self.gridLayout.addWidget(self.frame, 0, 0, 1, 1)
-
         InstructionsWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QMenuBar(InstructionsWindow)
-        self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1076, 22))
+        self.menubar = QtWidgets.QMenuBar(InstructionsWindow)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1076, 39))
+        self.menubar.setObjectName("menubar")
         InstructionsWindow.setMenuBar(self.menubar)
-        self.statusbar = QStatusBar(InstructionsWindow)
-        self.statusbar.setObjectName(u"statusbar")
+        self.statusbar = QtWidgets.QStatusBar(InstructionsWindow)
+        self.statusbar.setObjectName("statusbar")
         InstructionsWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(InstructionsWindow)
-
-        QMetaObject.connectSlotsByName(InstructionsWindow)
-    # setupUi
+        QtCore.QMetaObject.connectSlotsByName(InstructionsWindow)
 
     def retranslateUi(self, InstructionsWindow):
-        InstructionsWindow.setWindowTitle(QCoreApplication.translate("InstructionsWindow", u"Instructions", None))
-        self.instructions.setPlainText(QCoreApplication.translate("InstructionsWindow", u"Welcome!\n"
+        InstructionsWindow.setWindowTitle(QtWidgets.QApplication.translate("InstructionsWindow", "Instructions", None, -1))
+        self.instructions.setPlainText(QtWidgets.QApplication.translate("InstructionsWindow", "Welcome!\n"
 "\n"
-"	NetMD is an easy-to-use, easy-to-learn tool for recovery of compressively sampled (CS) Reflectance Confocal Microscopy (RCM) images of skin. \n"
+"    NetMD is an easy-to-use, easy-to-learn tool for recovery of compressively sampled (CS) Reflectance Confocal Microscopy (RCM) images of skin. \n"
 "\n"
 "\n"
 "Instructions:\n"
 "\n"
-"1- Upload to NetMD your compessed samples, alongside the sampling matrix used to collect the images.\n"
+"1- Upload your compessed sample.\n"
 "\n"
-"2- Specify the cs ratio used to collect the images.\n"
+"2- Upload the sampling matrix used to collect the images. \n"
 "\n"
-"3- Indicate the expected width and height of the output image.\n"
+"    - Expected to be a .mat file with an array accessed through key         \n"
+"    \'cs_measurements\'\n"
 "\n"
-"4- Reconstruct the image using the neural network backend!\n"
+"    - Array must have shape:\n"
+"         [num_img_blocks, 1089 * cs sampling ratio]\n"
+"    where cs sampling ratio is 10, 25 or 50 for 10%, 25% or 50%.\n"
+"\n"
+"3 - Upload the initialization matrix for the initial guess, used during network training. (Some provided in \'image_processing/ista/initialization_matrix/\')\n"
+"\n"
+"4- Indicate the expected width and height of the output image.\n"
+"\n"
+"5- Reconstruct the image using the neural network backend!\n"
 "\n"
 "\n"
 "Optional:\n"
@@ -126,12 +114,10 @@ class Ui_InstructionsWindow(object):
 "\n"
 "- Change Neural Network Models - \n"
 "\n"
-"	If you've trained alternate models using the train.py files located inside the program's ISTA-Net and RCMDD respective module folders, you can change the models the network is using in the settings page by selectin"
-                        "g the folder where the models where saved. For example, the default ISTA-Net and RCMDD models for RCM image recovery are saved in the 'image_processing/ista/model/RCM/'  and 'image_processing/rcmdd/model/RCM/' directories respectively. NOTE: The models must be named the same as the ones provided with the program, where the only thing that changes is the CS ratio in the name.\n"
+"    If you\'ve trained alternate models using the train.py files located inside the program\'s ISTA-Net and RCMDD respective module folders, you can change the models the network is using in the settings page by selecting the folder where the models where saved. For example, the default ISTA-Net and RCMDD models for RCM image recovery are saved in the \'image_processing/ista/model/RCM/\'  and \'image_processing/rcmdd/model/RCM/\' directories respectively. NOTE: The models must be named the same as the ones provided with the program, where the only thing that changes is the CS ratio in the name.\n"
 "\n"
 "For more information on model training visit:\n"
-"https://github.com/JDCuevas/NetMD-CAPSTONE", None))
-        self.startButton.setText(QCoreApplication.translate("InstructionsWindow", u"Get Started", None))
-        self.logoLabel.setText("")
-    # retranslateUi
+"https://github.com/JDCuevas/NetMD-CAPSTONE", None, -1))
+        self.startButton.setText(QtWidgets.QApplication.translate("InstructionsWindow", "Get Started", None, -1))
 
+import ui.icons_rc

@@ -34,6 +34,7 @@ class NetMDInstructions(instructions.Ui_InstructionsWindow, QtWidgets.QMainWindo
 
 
 class NetMDHome(home.Ui_HomeWindow, QtWidgets.QMainWindow):
+    
     def __init__(self, parent=None):
         super(NetMDHome, self).__init__(parent)
         self.setupUi(self)
@@ -68,15 +69,17 @@ class NetMDHome(home.Ui_HomeWindow, QtWidgets.QMainWindow):
         self.denoiser_status = self.parent().args.denoiser
         self.image_processor = Image_Processor(self.denoiser_status)
         
-
+    # Go to Instructions screen
     def instructions(self):
         self.hide()
         self.parent().show()
 
+    # Go to settings screen
     def settings(self):
         self.hide()
         self.parent().settings_back()
 
+    # Reconstruct uploaded image
     def reconstruct(self):
         cs_measurements_path = self.csMeasurementsPathLine.text()
         phi_path = self.samplingMatrixPathLine.text()
@@ -110,6 +113,7 @@ class NetMDHome(home.Ui_HomeWindow, QtWidgets.QMainWindow):
         cs_measurements = np.array(sio.loadmat(cs_measurements_path)['cs_measurements'])
         cs_ratio = int(self.csRatiosComboBox.currentText())
 
+        # Reconstruct image
         self.image_processor.load_models(self.ista_models_dir, self.rcmdd_models_dir, cs_ratio)
         self.img_recon = self.image_processor.process(cs_measurements, width, height, phi_path, qinit_path)
         self.img_recon_flag = True
@@ -174,7 +178,9 @@ class NetMDHome(home.Ui_HomeWindow, QtWidgets.QMainWindow):
 
 
 class NetMDSettings(settings.Ui_SettingsWindow, QtWidgets.QMainWindow):
+    
     def __init__(self, parent=None):
+
         super(NetMDSettings, self).__init__(parent)
         self.setupUi(self)
         self.setMinimumHeight(750)
