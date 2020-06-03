@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="/NetMD_logo.png" align="center" alt="NetMD" title="A cute kitten" width="30%" height="30%" />
+  <img src="/ui/images/NetMD_logo.png" align="center" alt="NetMD" title="A cute kitten" width="30%" height="30%" />
 </p>
 
 # NetMD 
